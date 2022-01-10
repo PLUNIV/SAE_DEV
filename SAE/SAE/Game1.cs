@@ -49,7 +49,7 @@ namespace SAE
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
-            _spriteBatch.Draw(_);
+            //_spriteBatch.Draw();
             _spriteBatch.End();
             base.Draw(gameTime);
         }
