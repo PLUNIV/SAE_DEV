@@ -25,11 +25,6 @@
 /processorParam:TextureFormat=Color
 /build:animation marche arrière.png
 
-#begin animation marche arrière.sf
-/importer:
-/processor:
-/build:animation marche arrière.sf
-
 #begin animation marche.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -41,11 +36,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:animation marche.png
-
-#begin animation marche.sf
-/importer:
-/processor:
-/build:animation marche.sf
 
 #begin bullet arrière.png
 /importer:TextureImporter
@@ -59,11 +49,6 @@
 /processorParam:TextureFormat=Color
 /build:bullet arrière.png
 
-#begin bullet arrière.sf
-/importer:
-/processor:
-/build:bullet arrière.sf
-
 #begin bullet.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -75,11 +60,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:bullet.png
-
-#begin bullet.sf
-/importer:
-/processor:
-/build:bullet.sf
 
 #begin fantôme base.png
 /importer:TextureImporter
@@ -93,11 +73,6 @@
 /processorParam:TextureFormat=Color
 /build:fantôme base.png
 
-#begin fantôme base.sf
-/importer:
-/processor:
-/build:fantôme base.sf
-
 #begin fantôme big.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -109,11 +84,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:fantôme big.png
-
-#begin fantôme big.sf
-/importer:
-/processor:
-/build:fantôme big.sf
 
 #begin fantôme petit.png
 /importer:TextureImporter
@@ -127,11 +97,6 @@
 /processorParam:TextureFormat=Color
 /build:fantôme petit.png
 
-#begin fantôme petit.sf
-/importer:
-/processor:
-/build:fantôme petit.sf
-
 #begin gun arrière.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -143,11 +108,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:gun arrière.png
-
-#begin gun arrière.sf
-/importer:
-/processor:
-/build:gun arrière.sf
 
 #begin gun.png
 /importer:TextureImporter
@@ -161,11 +121,6 @@
 /processorParam:TextureFormat=Color
 /build:gun.png
 
-#begin gun.sf
-/importer:
-/processor:
-/build:gun.sf
-
 #begin squelette idle arrière.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -178,11 +133,6 @@
 /processorParam:TextureFormat=Color
 /build:squelette idle arrière.png
 
-#begin squelette idle arrière.sf
-/importer:
-/processor:
-/build:squelette idle arrière.sf
-
 #begin squelette idle.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -194,9 +144,4 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:squelette idle.png
-
-#begin squelette idle.sf
-/importer:
-/processor:
-/build:squelette idle.sf
 
