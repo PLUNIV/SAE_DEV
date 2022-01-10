@@ -1,6 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended.Content;
+using MonoGame.Extended.Serialization;
+using MonoGame.Extended.Sprites;
+
+using System;
 
 namespace SAE
 {
@@ -9,8 +14,10 @@ namespace SAE
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Vector2 _persoPosition;
-        private int VitessePerso;
-        
+        private int _vitessePerso;
+        private AnimatedSprite _perso;
+        private string animation = "idle";
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -22,13 +29,16 @@ namespace SAE
         {
             // TODO: Add your initialization logic here
             _persoPosition = new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height - 100);
-            VitessePerso = 100;
+            _vitessePerso = 100;
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            // spritesheet
+            SpriteSheet spriteSheet = Content.Load<SpriteSheet>("squelette idle.sf", new JsonContentLoader());
+            _perso = new AnimatedSprite(spriteSheet);
 
             // TODO: use this.Content to load your game content here
         }
@@ -37,7 +47,8 @@ namespace SAE
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
+            float deltaSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float walkSpeed = deltaSeconds * _vitessePerso;
             // TODO: Add your update logic here
 
             base.Update(gameTime);
@@ -49,7 +60,7 @@ namespace SAE
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
-            _spriteBatch.Draw(_);
+            _spriteBatch.Draw(_perso, _persoPosition);
             _spriteBatch.End();
             base.Draw(gameTime);
         }
