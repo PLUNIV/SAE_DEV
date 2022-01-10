@@ -49,9 +49,34 @@ namespace SAE
                 Exit();
             float deltaSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             float walkSpeed = deltaSeconds * _vitessePerso;
+            
+            _perso.Update(deltaSeconds);
             // TODO: Add your update logic here
+            KeyboardState keyboardState = Keyboard.GetState();
+            if (keyboardState.IsKeyDown(Keys.Left))
+            {
+                animation = "walkWest";
+                _persoPosition.X -= walkSpeed;
+            }
+            if(keyboardState.IsKeyDown(Keys.Up))
+            {
+                animation = "walkNorth";
+                _persoPosition.Y -= walkSpeed;
+            }
+            if (keyboardState.IsKeyDown(Keys.Down))
+            {
+                animation = "walkSouth";
+                _persoPosition.Y += walkSpeed;
+            }
+            if(keyboardState.IsKeyDown(Keys.Right))
+            {
+                animation = "walkEast";
+                _persoPosition.X += walkSpeed;
+            }
 
-            base.Update(gameTime);
+
+
+                base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
