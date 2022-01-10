@@ -8,7 +8,9 @@ namespace SAE
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        private int test;
+        private Vector2 _persoPosition;
+        private int VitessePerso;
+        
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -19,7 +21,8 @@ namespace SAE
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
+            _persoPosition = new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height - 100);
+            VitessePerso = 100;
             base.Initialize();
         }
 
@@ -45,7 +48,9 @@ namespace SAE
             GraphicsDevice.Clear(Color.Green);
 
             // TODO: Add your drawing code here
-
+            _spriteBatch.Begin();
+            _spriteBatch.Draw(_);
+            _spriteBatch.End();
             base.Draw(gameTime);
         }
     }
