@@ -1,8 +1,0 @@
-{
-  "textureAtlas": {
-    "texture": "..\\gun arrière.png",
-    "regionWidth": 32,
-    "regionHeight": 32
-  },
-  "cycles": {}
-}
