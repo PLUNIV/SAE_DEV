@@ -11,13 +11,17 @@ using System;
 namespace SAE
 {
     public class Game1 : Game
-    {
+    {   
+
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Vector2 _persoPosition;
         private int _vitessePerso;
         private AnimatedSprite _perso;
         private Song song;
+        private int _VitesseFantomeRouge;
+        private int _VitesseFantomeBleu;
+        private int _VitesseFantomeJaune;
 
         public Game1()
         {
@@ -31,6 +35,9 @@ namespace SAE
             // TODO: Add your initialization logic here
             _persoPosition = new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height - 100);
             _vitessePerso = 100;
+            _VitesseFantomeJaune = 100;
+            _VitesseFantomeRouge = 85;
+            _VitesseFantomeBleu = 70;
             base.Initialize();
         }
 
