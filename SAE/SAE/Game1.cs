@@ -5,6 +5,8 @@ using MonoGame.Extended.Content;
 using MonoGame.Extended.Serialization;
 using MonoGame.Extended.Sprites;
 using Microsoft.Xna.Framework.Media;
+using MonoGame.Extended.Animations;
+using Microsoft.Xna.Framework.Content;
 
 using System;
 
@@ -45,7 +47,7 @@ namespace SAE
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             // spritesheet
-            SpriteSheet spriteSheet = Content.Load<SpriteSheet>("squelette idle.sf", new JsonContentLoader());
+            SpriteSheet spriteSheet = Content.Load<SpriteSheet>("Sprites.sf", new JsonContentLoader());
             _perso = new AnimatedSprite(spriteSheet);
             this.song = Content.Load<Song>("hauntedcastle");
             MediaPlayer.Play(song);
@@ -70,10 +72,10 @@ namespace SAE
             _perso.Update(deltaSeconds);
             // TODO: Add your update logic here
             KeyboardState keyboardState = Keyboard.GetState();
-            string animation = "animation0";
+            string animation = "idle droite";
             if (keyboardState.IsKeyDown(Keys.Left))
             {
-                animation = "animation0";
+                animation = "marche gauche";
                 _persoPosition.X -= walkSpeed;
             }
             if(keyboardState.IsKeyDown(Keys.Up))
@@ -86,7 +88,7 @@ namespace SAE
             }
             if(keyboardState.IsKeyDown(Keys.Right))
             {
-                animation = "animation0";
+                animation = "marche droite";
                 _persoPosition.X += walkSpeed;
             }
 
@@ -103,6 +105,7 @@ namespace SAE
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
             _spriteBatch.Draw(_perso, _persoPosition);
+
             _spriteBatch.End();
             base.Draw(gameTime);
         }
