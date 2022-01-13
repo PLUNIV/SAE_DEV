@@ -68,7 +68,7 @@ namespace SAE
             string animation = "idle droite";
             if (keyboardState.IsKeyDown(Keys.Left))
             {
-                animation = "marche droite";
+                animation = "marche gauche";
                 _persoPosition.X -= walkSpeed;
             }
             if(keyboardState.IsKeyDown(Keys.Up))
@@ -81,7 +81,7 @@ namespace SAE
             }
             if(keyboardState.IsKeyDown(Keys.Right))
             {
-                animation = "marche gauche";
+                animation = "marche droite";
                 _persoPosition.X += walkSpeed;
             }
 
@@ -98,6 +98,7 @@ namespace SAE
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
             _spriteBatch.Draw(_perso, _persoPosition);
+
             _spriteBatch.End();
             base.Draw(gameTime);
         }
