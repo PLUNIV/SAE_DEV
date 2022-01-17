@@ -19,7 +19,7 @@ namespace SAE
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        private Vector2 _persoPosition;
+        public Vector2 _persoPosition;
         private Vector2 _gunPosition;
         private int _vitessePerso;
         private Vector2 _positionFantome;
@@ -38,10 +38,11 @@ namespace SAE
         private float rotation;
         private int gunRotationPosition;
 
+
         private AnimatedSprite[] monsters;
         private Vector2[] monsterPositions;
-      
 
+        List<Bullets> bullets = new List<Bullets>();
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -154,6 +155,10 @@ namespace SAE
                 _persoPosition.X += walkSpeed;
                 _gunPosition.X += walkSpeed;
             }
+
+            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                Shoot();
+
             
 
             for (int i = 0; i < monsters.Length; i++)//pour tout les mobs
@@ -170,6 +175,7 @@ namespace SAE
                 //faire l'animation du mob (son déplacement)
             }
 
+            UpdateBullets();
             _perso.Play(animation);
             _gun.Play(animationGun);
             _perso.Update(deltaSeconds);
@@ -185,6 +191,36 @@ namespace SAE
             base.Update(gameTime);
         }
 
+        public void UpdateBullets()
+        {
+            foreach(Bullets bullets in bullets)
+            {
+                bullets._bulletPosition += bullets.Vélocité;
+                if (Vector2.Distance(bullets._bulletPosition, _persoPosition) > 800)
+                    bullets.isVisible = false;
+            }
+
+            for(int i = 0; i < bullets.Count; i++)
+            {
+                if (!bullets[i].isVisible)
+                {
+                    bullets.RemoveAt(i);
+                    i--;
+                }
+            }
+        }
+
+        public void Shoot()
+        {
+            Bullets newBullet = new Bullets(Content.Load<Texture2D>("bullet"));
+            newBullet.Vélocité = new Vector2((float)Math.Cos(rotation), (float)Math.Sin(rotation)) * 10f;
+            newBullet._bulletPosition = _gunPosition + newBullet.Vélocité;
+            newBullet.isVisible = true;
+
+            if (bullets.Count < 1)
+                bullets.Add(newBullet);
+        }
+
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Green);
@@ -194,6 +230,8 @@ namespace SAE
             _spriteBatch.Draw(_backgroundTexture, new Vector2(0, 0), Color.White);
             _spriteBatch.Draw(_perso, _persoPosition);
             _spriteBatch.Draw(_gun, _gunPosition, rotation);
+            foreach (Bullets bullet in bullets)
+                bullet.Draw(_spriteBatch);
             _spriteBatch.Draw(_backgroundBonesTexture, new Vector2(0, 0), Color.White);
             for (int i = 0; i < monsters.Length; i++)
             {
