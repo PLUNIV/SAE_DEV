@@ -20,16 +20,23 @@ namespace SAE
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Vector2 _persoPosition;
+        private Vector2 _gunPosition;
         private int _vitessePerso;
         private Vector2 _positionFantome;
         private AnimatedSprite _perso;
         private AnimatedSprite _FantomeGros;
         private AnimatedSprite _FantomeBase;
         private AnimatedSprite _FantomePetit;
+        private AnimatedSprite _gun;
         private Song song;
         private int _VitesseFantomePetit;
         private int _VitesseFantomeBase;
         private int _VitesseFantomeGros;
+        private Texture2D _backgroundTexture;
+        private Texture2D _backgroundBonesTexture;
+        private Vector2 _distance;
+        private float rotation;
+        private int gunRotationPosition;
 
         private AnimatedSprite[] monsters;
         private Vector2[] monsterPositions;
@@ -46,6 +53,7 @@ namespace SAE
         {
             // TODO: Add your initialization logic here
             _persoPosition = new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height - 100);
+            _gunPosition = new Vector2(GraphicsDevice.Viewport.Width / 2 + 15, GraphicsDevice.Viewport.Height - 97);
             _vitessePerso = 100;
             _VitesseFantomePetit = 100;
             _VitesseFantomeBase = 85;
@@ -57,9 +65,14 @@ namespace SAE
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+
             // spritesheet
-            SpriteSheet spriteSheet = Content.Load<SpriteSheet>("Sprites.sf", new JsonContentLoader());
+            SpriteSheet spriteSheet = Content.Load<SpriteSheet>("animations.sf", new JsonContentLoader());
+            _backgroundTexture = Content.Load<Texture2D>("Battleground4");
+            _backgroundBonesTexture = Content.Load<Texture2D>("bones");
+            SpriteSheet spriteGun = Content.Load<SpriteSheet>("Gun.sf", new JsonContentLoader());
             _perso = new AnimatedSprite(spriteSheet);
+            _gun = new AnimatedSprite(spriteGun);
             _FantomePetit = new AnimatedSprite(spriteSheet, "fantôme petit");
             
             monsters = new AnimatedSprite[3];
@@ -91,8 +104,16 @@ namespace SAE
                 Exit();
             float deltaSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             float walkSpeed = deltaSeconds * _vitessePerso;
-            
+
+
+            IsMouseVisible = true;
+            Vector2 mousePosition = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
+            _distance.X = Mouse.GetState().X - _gunPosition.X;
+            _distance.Y = Mouse.GetState().Y - _gunPosition.Y;
+            rotation = (float)Math.Atan2(_distance.Y, _distance.X);
+
             _perso.Update(deltaSeconds);
+            _gun.Update(deltaSeconds);
             _FantomePetit.Update(deltaSeconds);
             foreach (AnimatedSprite monster in monsters)
             {
@@ -101,25 +122,34 @@ namespace SAE
             // TODO: Add your update logic here
             KeyboardState keyboardState = Keyboard.GetState();
             string animation = "idle droite";
+            string animationGun = "gun droite";
             if (keyboardState.IsKeyDown(Keys.Left))
             {
-                animation = "marche gauche";
+                /*animation = "marche gauche";
+                animationGun = "gun gauche";
+                gunRotationPosition = - 15;*/
+                animation = "marche droite";
                 _persoPosition.X -= walkSpeed;
+                _gunPosition.X -= walkSpeed;
             }
             if(keyboardState.IsKeyDown(Keys.Up))
             {
                 _persoPosition.Y -= walkSpeed;
+                _gunPosition.Y -= walkSpeed;
             }
             if (keyboardState.IsKeyDown(Keys.Down))
             {
                 _persoPosition.Y += walkSpeed;
+                _gunPosition.Y += walkSpeed;
             }
             if(keyboardState.IsKeyDown(Keys.Right))
             {
                 animation = "marche droite";
+                //gunRotationPosition = 15;
                 _persoPosition.X += walkSpeed;
+                _gunPosition.X += walkSpeed;
             }
-
+            
 
             for (int i = 0; i < monsters.Length; i++)//pour tout les mobs
             {
@@ -130,6 +160,7 @@ namespace SAE
             }
 
             _perso.Play(animation);
+            _gun.Play(animationGun);
             _perso.Update(deltaSeconds);
             _FantomePetit.Play("fantôme petit");
             _FantomePetit.Update(deltaSeconds);
@@ -148,8 +179,10 @@ namespace SAE
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
+            _spriteBatch.Draw(_backgroundTexture, new Vector2(0, 0), Color.White);
             _spriteBatch.Draw(_perso, _persoPosition);
-            _spriteBatch.Draw(_FantomePetit, _persoPosition);
+            _spriteBatch.Draw(_gun, _gunPosition, rotation);
+            _spriteBatch.Draw(_backgroundBonesTexture, new Vector2(0, 0), Color.White);
             for (int i = 0; i < monsters.Length; i++)
             {
                 _spriteBatch.Draw(monsters[i], monsterPositions[i]);
