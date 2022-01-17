@@ -50,7 +50,8 @@ namespace SAE
             _VitesseFantomePetit = 100;
             _VitesseFantomeBase = 85;
             _VitesseFantomeGros = 70;
-
+            
+           
             base.Initialize();
         }
 
@@ -61,16 +62,20 @@ namespace SAE
             SpriteSheet spriteSheet = Content.Load<SpriteSheet>("Sprites.sf", new JsonContentLoader());
             _perso = new AnimatedSprite(spriteSheet);
             _FantomePetit = new AnimatedSprite(spriteSheet, "fantôme petit");
-            
+
+            System.Random fantomey = new Random();
+            int positionFantomeY = fantomey.Next(0, GraphicsDevice.Viewport.Width);
+
             monsters = new AnimatedSprite[3];
             monsters[0] = new AnimatedSprite(spriteSheet, "fantôme petit");
             monsters[1] = new AnimatedSprite(spriteSheet, "fantôme base");
             monsters[2] = new AnimatedSprite(spriteSheet, "fantôme gros");
 
             monsterPositions = new Vector2[3];
-            monsterPositions[0] = new Vector2(10, 10);
-            monsterPositions[1] = new Vector2(850, 10);
-            monsterPositions[2] = new Vector2(10, 400);
+            monsterPositions[0] = new Vector2(10, positionFantomeY);
+            monsterPositions[1] = new Vector2(850, positionFantomeY);
+            monsterPositions[2] = new Vector2(10, positionFantomeY);
+
 
             this.song = Content.Load<Song>("hauntedcastle");
             MediaPlayer.Play(song);
@@ -126,6 +131,12 @@ namespace SAE
                 //monsters[i] le mob
                 //monsterPositions[i] la position du mob
 
+
+               System.Random apparition = new Random();
+                int spawn = apparition.Next(0,3);
+                
+
+
                 //faire l'animation du mob (son déplacement)
             }
 
@@ -138,6 +149,7 @@ namespace SAE
             {
                 monster.Update(deltaSeconds);
             }
+            // Rectangle rectanglePerso = new Rectangle((int)_persoPosition.X, (int)_persoPosition.Y, );
 
             base.Update(gameTime);
         }
