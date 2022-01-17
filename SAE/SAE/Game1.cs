@@ -29,18 +29,17 @@ namespace SAE
         private AnimatedSprite _FantomePetit;
         private AnimatedSprite _gun;
         private Song song;
-        private int _VitesseFantomePetit;
-        private int _VitesseFantomeBase;
-        private int _VitesseFantomeGros;
         private Texture2D _backgroundTexture;
         private Texture2D _backgroundBonesTexture;
         private Vector2 _distance;
         private float rotation;
         private int gunRotationPosition;
-
+        private int [] VitesseFantomes;
 
         private AnimatedSprite[] monsters;
         private Vector2[] monsterPositions;
+        private string[] monsterName;
+        private float lastUpdate;
 
         List<Bullets> bullets = new List<Bullets>();
         public Game1()
@@ -55,12 +54,17 @@ namespace SAE
             // TODO: Add your initialization logic here
             _persoPosition = new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height - 100);
             _gunPosition = new Vector2(GraphicsDevice.Viewport.Width / 2 + 15, GraphicsDevice.Viewport.Height - 97);
-            _vitessePerso = 100;
-            _VitesseFantomePetit = 100;
-            _VitesseFantomeBase = 85;
-            _VitesseFantomeGros = 70;
-            
-           
+            _vitessePerso = 160;
+            VitesseFantomes = new int[3];
+            VitesseFantomes[0] = 100;
+            VitesseFantomes[1] = 85;
+            VitesseFantomes[2] = 70;
+
+            monsterName = new string[3];
+            monsterName[0] = "fantôme petit";
+            monsterName[1] = "fantôme base";
+            monsterName[2] = "fantôme gros";
+
             base.Initialize();
         }
 
@@ -77,19 +81,16 @@ namespace SAE
             _gun = new AnimatedSprite(spriteGun);
             _FantomePetit = new AnimatedSprite(spriteSheet, "fantôme petit");
 
-            System.Random fantomey = new Random();
-            int positionFantomeY = fantomey.Next(0, GraphicsDevice.Viewport.Width);
-
             monsters = new AnimatedSprite[3];
-            monsters[0] = new AnimatedSprite(spriteSheet, "fantôme petit");
-            monsters[1] = new AnimatedSprite(spriteSheet, "fantôme base");
-            monsters[2] = new AnimatedSprite(spriteSheet, "fantôme gros");
-
             monsterPositions = new Vector2[3];
-            monsterPositions[0] = new Vector2(10, positionFantomeY);
-            monsterPositions[1] = new Vector2(850, positionFantomeY);
-            monsterPositions[2] = new Vector2(10, positionFantomeY);
+            for (int i = 0; i < monsters.Length; i++)//pour tout les mobs
+            {
+                System.Random fantomey = new Random();
+                int positionFantomeY = fantomey.Next(0, GraphicsDevice.Viewport.Height);
 
+                monsters[i] = new AnimatedSprite(spriteSheet, monsterName[i]);
+                monsterPositions[i] = new Vector2(0 + monsters[i].TextureRegion.Width, positionFantomeY);
+            }
 
             this.song = Content.Load<Song>("hauntedcastle");
             MediaPlayer.Play(song);
@@ -159,21 +160,54 @@ namespace SAE
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
                 Shoot();
 
-            
 
+            
             for (int i = 0; i < monsters.Length; i++)//pour tout les mobs
             {
                 //monsters[i] le mob
-                //monsterPositions[i] la position du mob
+                //monsterPositions[i] la position du mob                
 
+                System.Random apparition = new Random();
+                int spawn = apparition.Next(0, 3);
+                float diagonal;
+                if (monsterPositions[i].X == _persoPosition.X || monsterPositions[i].Y == _persoPosition.Y)
+                {
+                    diagonal = 1;
+                }
+                else
+                {
+                    diagonal = (float)Math.Sqrt((VitesseFantomes[i] * VitesseFantomes[i]) / 2)/100;
+                }
 
-               System.Random apparition = new Random();
-                int spawn = apparition.Next(0,3);
-                
+                if (monsterPositions[i].X > _persoPosition.X)
+                {
+                    monsterPositions[i].X -= (float)VitesseFantomes[i] * diagonal * deltaSeconds;
+                }
+                else if (monsterPositions[i].X < _persoPosition.X)
+                {
+                    monsterPositions[i].X += (float)VitesseFantomes[i] * diagonal * deltaSeconds;
+                }
+                else
+                {
+                    //sur la même ligne pas besoin de bouger
+                }
 
+                if (monsterPositions[i].Y > _persoPosition.Y)
+                {
+                    monsterPositions[i].Y -= (float)VitesseFantomes[i] * diagonal * deltaSeconds;
+                }
+                else if (monsterPositions[i].Y < _persoPosition.Y)
+                {
+                    monsterPositions[i].Y += (float)VitesseFantomes[i] * diagonal * deltaSeconds;
+                }
+                else
+                {
+                    //sur la même colonne pas besoin de bouger
+                }
 
                 //faire l'animation du mob (son déplacement)
             }
+            
 
             UpdateBullets();
             _perso.Play(animation);
@@ -182,9 +216,10 @@ namespace SAE
             _FantomePetit.Play("fantôme petit");
             _FantomePetit.Update(deltaSeconds);
 
-            foreach (AnimatedSprite monster in monsters)
+            for (int i = 0; i < monsters.Length; i++)//pour tout les mobs
             {
-                monster.Update(deltaSeconds);
+                monsters[i].Play(monsterName[i]);
+                monsters[i].Update(deltaSeconds);
             }
             // Rectangle rectanglePerso = new Rectangle((int)_persoPosition.X, (int)_persoPosition.Y, );
 
