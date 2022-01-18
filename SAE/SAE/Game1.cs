@@ -31,6 +31,15 @@ namespace SAE
         private AnimatedSprite _FantomeGros;
         private AnimatedSprite _FantomeBase;
         private AnimatedSprite _FantomePetit;
+        private Rectangle _hitboxGros;
+        private Rectangle _hitboxBase;
+        private Rectangle _hitboxPetit;
+        public const int LARGEUR_BASE = 72;
+        public const int HAUTEUR_BASE = 60;
+        public const int LARGEUR_GROS = 84;
+        public const int HAUTEUR_GROS = 88;
+        public const int LARGEUR_PETIT = 40;
+        public const int HAUTEUR_PETIT = 44;
         private AnimatedSprite _gun;
         private Song song;
         private Texture2D _backgroundTexture;
@@ -42,13 +51,13 @@ namespace SAE
         public int _score;
         public SpriteFont _textScore;
         public Vector2 _positionScore;
-
-        private Rectangle _hitboxBullet;
+        private AnimatedSprite _vie;
+        public int viePerso;
+        public Vector2 _viePosition;
 
         private AnimatedSprite[] monsters;
         private Vector2[] monsterPositions;
         private string[] monsterName;
-        private float lastUpdate;
 
         List<Bullets> bullets = new List<Bullets>();
         public Game1()
@@ -65,6 +74,8 @@ namespace SAE
             _hitboxPerso = new Rectangle((int)_persoPosition.X, (int)_persoPosition.Y, LARGEUR_PERSO, HAUTEUR_PERSO);
             _gunPosition = new Vector2(GraphicsDevice.Viewport.Width / 2 + 15, GraphicsDevice.Viewport.Height - 97);
             _vitessePerso = 160;
+            viePerso = 3;
+            _viePosition = new Vector2(0, 0);
             VitesseFantomes = new int[3];
             VitesseFantomes[0] = 100;
             VitesseFantomes[1] = 85;
@@ -87,10 +98,12 @@ namespace SAE
 
             // spritesheet
             SpriteSheet spriteSheet = Content.Load<SpriteSheet>("animations.sf", new JsonContentLoader());
+            SpriteSheet spriteSheetCoeurs = Content.Load<SpriteSheet>("coeurs.sf", new JsonContentLoader());
             _backgroundTexture = Content.Load<Texture2D>("Battleground4");
             _backgroundBonesTexture = Content.Load<Texture2D>("bones");
             SpriteSheet spriteGun = Content.Load<SpriteSheet>("Gun.sf", new JsonContentLoader());
             _perso = new AnimatedSprite(spriteSheet);
+            _vie = new AnimatedSprite(spriteSheetCoeurs);
             _gun = new AnimatedSprite(spriteGun);
             _FantomePetit = new AnimatedSprite(spriteSheet, "fantôme petit");
 
@@ -142,6 +155,20 @@ namespace SAE
                 monster.Update(deltaSeconds);
             }
             // TODO: Add your update logic here
+
+            string animationCoeurs;
+            if(viePerso == 3)
+            {
+                animationCoeurs = "3 vie";
+            }
+            else if(viePerso == 2)
+            {
+                animationCoeurs = "2 vie";
+            }
+            else
+            {
+                animationCoeurs = "1 vie";
+            }
             KeyboardState keyboardState = Keyboard.GetState();
             string animation = "idle droite";
             string animationGun = "gun droite";
@@ -252,6 +279,7 @@ namespace SAE
             
 
             UpdateBullets();
+            _vie.Play(animationCoeurs);
             _perso.Play(animation);
             _gun.Play(animationGun);
             _perso.Update(deltaSeconds);
@@ -285,6 +313,12 @@ namespace SAE
                     i--;
                 }
             }
+
+            //besoin hitbox fantôme
+            /*foreach(Bullets bullets in )
+            {
+                _score++;
+            }*/
         }
 
         public void Shoot()
@@ -315,6 +349,7 @@ namespace SAE
                 _spriteBatch.Draw(monsters[i], monsterPositions[i]);
             }
             _spriteBatch.DrawString(_textScore, $"Score : {_score}", _positionScore, Color.Black);
+            _spriteBatch.Draw(_vie, _viePosition);
             _spriteBatch.End();
             base.Draw(gameTime);
         }
