@@ -7,6 +7,8 @@ using MonoGame.Extended.Sprites;
 using Microsoft.Xna.Framework.Media;
 using MonoGame.Extended.Animations;
 using Microsoft.Xna.Framework.Content;
+using MonoGame.Extended.Tiled;
+using MonoGame.Extended.Tiled.Renderers;
 
 using System;
 using MonoGame.Extended.TextureAtlases;
@@ -35,6 +37,9 @@ namespace SAE
         private float rotation;
         private int gunRotationPosition;
         private int [] VitesseFantomes;
+        public int _score;
+        public SpriteFont _textScore;
+        public Vector2 _positionScore;
 
         private AnimatedSprite[] monsters;
         private Vector2[] monsterPositions;
@@ -65,6 +70,9 @@ namespace SAE
             monsterName[1] = "fantôme base";
             monsterName[2] = "fantôme gros";
 
+            _score = 0;
+            _positionScore = new Vector2(660, 0);
+
             base.Initialize();
         }
 
@@ -80,6 +88,8 @@ namespace SAE
             _perso = new AnimatedSprite(spriteSheet);
             _gun = new AnimatedSprite(spriteGun);
             _FantomePetit = new AnimatedSprite(spriteSheet, "fantôme petit");
+
+            _textScore = Content.Load<SpriteFont>("Font");
 
             monsters = new AnimatedSprite[3];
             monsterPositions = new Vector2[3];
@@ -205,6 +215,30 @@ namespace SAE
                     //sur la même colonne pas besoin de bouger
                 }
 
+                if (_persoPosition.Y < 220)
+                {
+                    _persoPosition.Y = 220;
+                    _gunPosition.Y = _persoPosition.Y + 3;
+                }
+
+                if (_persoPosition.X < 14)
+                {
+                    _persoPosition.X = 14;
+                    _gunPosition.X = _persoPosition.X + 15;
+                }
+
+                if (_persoPosition.Y > GraphicsDevice.Viewport.Height - 14)
+                {
+                    _persoPosition.Y = GraphicsDevice.Viewport.Height - 14;
+                    _gunPosition.Y = _persoPosition.Y + 3;
+                }
+
+                if (_persoPosition.X > GraphicsDevice.Viewport.Width - 14)
+                {
+                    _persoPosition.X = GraphicsDevice.Viewport.Width - 14;
+                    _gunPosition.X = _persoPosition.X + 15;
+                }
+
                 //faire l'animation du mob (son déplacement)
             }
             
@@ -272,6 +306,7 @@ namespace SAE
             {
                 _spriteBatch.Draw(monsters[i], monsterPositions[i]);
             }
+            _spriteBatch.DrawString(_textScore, $"Score : {_score}", _positionScore, Color.Black);
             _spriteBatch.End();
             base.Draw(gameTime);
         }
