@@ -84,6 +84,8 @@ namespace SAE
             monsterName[1] = "fantôme base";
             monsterName[2] = "fantôme gros";
 
+
+
             _score = 0;
             _positionScore = new Vector2(660, 0);
 
@@ -318,10 +320,17 @@ namespace SAE
             {
                 _score++;
             }*/
-            Rectangle hitboxlePerso = new Rectangle((int)_persoPosition.X, (int)_persoPosition.Y, LARGEUR_PERSO, HAUTEUR_PERSO);
-            Rectangle hitboxFantomePetit = new Rectangle((int)monsterPositions[0].X, (int)monsterPositions[0].Y, HAUTEUR_PETIT, LARGEUR_PETIT);
+
+            Rectangle hitboxFantomePetit = new Rectangle((int)monsterPositions[0].X, (int)monsterPositions[1].Y, HAUTEUR_PETIT, LARGEUR_PETIT);
             Rectangle hitboxFantomeBase = new Rectangle((int)monsterPositions[1].X, (int)monsterPositions[1].Y, HAUTEUR_BASE, LARGEUR_BASE);
             Rectangle hitboxFantomeGros = new Rectangle((int)monsterPositions[2].X, (int)monsterPositions[2].Y, HAUTEUR_GROS, LARGEUR_GROS);
+
+            if (hitboxFantomePetit.Intersects(hitboxFantomePetit))
+            {
+                // vie -1 
+               // _spriteBatch.End(monsterName[0]);
+
+            }
             
         }
 
@@ -352,6 +361,8 @@ namespace SAE
             for (int i = 0; i < monsters.Length; i++)
             {
                 _spriteBatch.Draw(monsters[i], monsterPositions[i]);
+                
+
             }
             _spriteBatch.DrawString(_textScore, $"Score : {_score}", _positionScore, Color.Black);
           //  _spriteBatch.Draw(_vie, _viePosition);
