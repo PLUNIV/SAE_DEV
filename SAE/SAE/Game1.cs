@@ -93,14 +93,14 @@ namespace SAE
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // spritesheet
+            
             SpriteSheet spriteSheet = Content.Load<SpriteSheet>("animations.sf", new JsonContentLoader());
-           // SpriteSheet spriteSheetCoeurs = Content.Load<SpriteSheet>("coeurs.sf", new JsonContentLoader());
+            SpriteSheet spriteSheetCoeurs = Content.Load<SpriteSheet>("coeurs.sf", new JsonContentLoader());
             _backgroundTexture = Content.Load<Texture2D>("Battleground4");
             _backgroundBonesTexture = Content.Load<Texture2D>("bones");
             SpriteSheet spriteGun = Content.Load<SpriteSheet>("Gun.sf", new JsonContentLoader());
             _perso = new AnimatedSprite(spriteSheet);
-           // _vie = new AnimatedSprite(spriteSheetCoeurs);
+            _vie = new AnimatedSprite(spriteSheetCoeurs);
             _gun = new AnimatedSprite(spriteGun);
             _FantomePetit = new AnimatedSprite(spriteSheet, "fantôme petit");
 
@@ -146,6 +146,7 @@ namespace SAE
 
             _perso.Update(deltaSeconds);
             _gun.Update(deltaSeconds);
+            _vie.Update(deltaSeconds);
             _FantomePetit.Update(deltaSeconds);
             foreach (AnimatedSprite monster in monsters)
             {
@@ -153,10 +154,10 @@ namespace SAE
             }
             // TODO: Add your update logic here
 
-            string animationCoeurs = "1 vie";
+            string animationCoeurs = "3 vie";
             if(viePerso == 3)
             {
-                animationCoeurs = "1 vie";
+                animationCoeurs = "3 vie";
             }
             else if(viePerso == 2)
             {
@@ -164,7 +165,7 @@ namespace SAE
             }
             else
             {
-                animationCoeurs = "3 vie";
+                animationCoeurs = "1 vie";
             }
             KeyboardState keyboardState = Keyboard.GetState();
             string animation = "idle droite";
@@ -191,7 +192,6 @@ namespace SAE
             if(keyboardState.IsKeyDown(Keys.Right))
             {
                 animation = "marche droite";
-                //gunRotationPosition = 15;
                 _persoPosition.X += walkSpeed;
                 _gunPosition.X += walkSpeed;
             }
@@ -276,7 +276,7 @@ namespace SAE
             
 
             UpdateBullets();
-           // _vie.Play(animationCoeurs);
+            _vie.Play(animationCoeurs);
             _perso.Play(animation);
             _gun.Play(animationGun);
             _perso.Update(deltaSeconds);
@@ -317,7 +317,7 @@ namespace SAE
             {
                 _score++;
             }*/
-            Rectangle hitboxlePerso = new Rectangle((int)_persoPosition.X, (int)_persoPosition.Y, LARGEUR_PERSO, HAUTEUR_PERSO);
+            
             Rectangle hitboxFantomePetit = new Rectangle((int)monsterPositions[0].X, (int)monsterPositions[0].Y, HAUTEUR_PETIT, LARGEUR_PETIT);
             Rectangle hitboxFantomeBase = new Rectangle((int)monsterPositions[1].X, (int)monsterPositions[1].Y, HAUTEUR_BASE, LARGEUR_BASE);
             Rectangle hitboxFantomeGros = new Rectangle((int)monsterPositions[2].X, (int)monsterPositions[2].Y, HAUTEUR_GROS, LARGEUR_GROS);
@@ -353,7 +353,7 @@ namespace SAE
                 _spriteBatch.Draw(monsters[i], monsterPositions[i]);
             }
             _spriteBatch.DrawString(_textScore, $"Score : {_score}", _positionScore, Color.Black);
-          //  _spriteBatch.Draw(_vie, _viePosition);
+            _spriteBatch.Draw(_vie, _viePosition);
             _spriteBatch.End();
             base.Draw(gameTime);
         }
