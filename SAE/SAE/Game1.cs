@@ -21,6 +21,7 @@ namespace SAE
         public const int LARGEUR_PERSO = 32;
         public const int HAUTEUR_PERSO = 52;
         private Rectangle _hitboxPerso;
+        private Rectangle _hitboxBullets;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         public Vector2 _persoPosition;
@@ -82,6 +83,8 @@ namespace SAE
             monsterName[0] = "fantôme petit";
             monsterName[1] = "fantôme base";
             monsterName[2] = "fantôme gros";
+           
+
 
 
 
@@ -116,7 +119,7 @@ namespace SAE
                 int positionFantomeY = fantomey.Next(0, GraphicsDevice.Viewport.Height);
 
                 monsters[i] = new AnimatedSprite(spriteSheet, monsterName[i]);
-                monsterPositions[i] = new Vector2(0 + monsters[i].TextureRegion.Width, positionFantomeY);
+                monsterPositions[i] = new Vector2(0 - monsters[i].TextureRegion.Width, positionFantomeY);
             }
 
             this.song = Content.Load<Song>("hauntedcastle");
@@ -165,9 +168,13 @@ namespace SAE
             {
                 animationCoeurs = "2 vie";
             }
-            else
+            else if(viePerso == 1)
             {
                 animationCoeurs = "1 vie";
+            }
+            else
+            {
+                //mort 
             }
             KeyboardState keyboardState = Keyboard.GetState();
             string animation = "idle droite";
@@ -199,6 +206,7 @@ namespace SAE
             }
 
             _hitboxPerso.X = (int)_persoPosition.X;
+            _hitboxPerso.Y = (int)_persoPosition.Y;
             System.Console.WriteLine(_hitboxPerso);
 
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
@@ -289,8 +297,33 @@ namespace SAE
             {
                 monsters[i].Play(monsterName[i]);
                 monsters[i].Update(deltaSeconds);
+                _ = monsters[i].TextureRegion.Bounds;
             }
-        
+
+            Rectangle _hitboxFantomePetit = new Rectangle((int)monsterPositions[0].X, (int)monsterPositions[0].Y, HAUTEUR_PETIT, LARGEUR_PETIT);
+            Rectangle _hitboxFantomeBase = new Rectangle((int)monsterPositions[1].X, (int)monsterPositions[1].Y, HAUTEUR_BASE, LARGEUR_BASE);
+            Rectangle _hitboxFantomeGros = new Rectangle((int)monsterPositions[2].X, (int)monsterPositions[2].Y, HAUTEUR_GROS, LARGEUR_GROS);
+            if (_hitboxFantomePetit.Intersects(_hitboxPerso))
+            {
+                System.Random fantomey = new Random();
+                int positionFantomeY = fantomey.Next(0, GraphicsDevice.Viewport.Height);
+                viePerso--;
+                monsterPositions[0] = new Vector2(0 - monsters[0].TextureRegion.Width, positionFantomeY);
+            }
+            if (_hitboxFantomeBase.Intersects(_hitboxPerso))
+            {
+                System.Random fantomey = new Random();
+                int positionFantomeY = fantomey.Next(0, GraphicsDevice.Viewport.Height);
+                viePerso--;
+                monsterPositions[1] = new Vector2(0 - monsters[1].TextureRegion.Width, positionFantomeY);
+            }
+            if (_hitboxFantomeGros.Intersects(_hitboxPerso))
+            {
+                System.Random fantomey = new Random();
+                int positionFantomeY = fantomey.Next(0, GraphicsDevice.Viewport.Height);
+                viePerso--;
+                monsterPositions[2] = new Vector2(0 - monsters[2].TextureRegion.Width, positionFantomeY);
+            }
 
             base.Update(gameTime);
         }
@@ -302,7 +335,7 @@ namespace SAE
                 bullets._bulletPosition += bullets.Vélocité;
                 if (Vector2.Distance(bullets._bulletPosition, _persoPosition) > 800)
                     bullets.isVisible = false;
-                Rectangle hitboxBullets = new Rectangle((int)bullets._bulletPosition.X, (int)bullets._bulletPosition.Y,HAUTEUR_BULLET, LARGEUR_BULLET);
+                _hitboxBullets = new Rectangle((int)bullets._bulletPosition.X, (int)bullets._bulletPosition.Y,HAUTEUR_BULLET, LARGEUR_BULLET);
             }
 
             for(int i = 0; i < bullets.Count; i++)
@@ -320,16 +353,6 @@ namespace SAE
                 _score++;
             }*/
             
-            Rectangle hitboxFantomePetit = new Rectangle((int)monsterPositions[0].X, (int)monsterPositions[0].Y, HAUTEUR_PETIT, LARGEUR_PETIT);
-            Rectangle hitboxFantomeBase = new Rectangle((int)monsterPositions[1].X, (int)monsterPositions[1].Y, HAUTEUR_BASE, LARGEUR_BASE);
-            Rectangle hitboxFantomeGros = new Rectangle((int)monsterPositions[2].X, (int)monsterPositions[2].Y, HAUTEUR_GROS, LARGEUR_GROS);
-
-            if (hitboxFantomePetit.Intersects(hitboxFantomePetit))
-            {
-                // vie -1 
-               // _spriteBatch.End(monsterName[0]);
-
-            }
             
         }
 
@@ -361,8 +384,8 @@ namespace SAE
             {
                 _spriteBatch.Draw(monsters[i], monsterPositions[i]);
                 
-
             }
+            
             _spriteBatch.DrawString(_textScore, $"Score : {_score}", _positionScore, Color.Black);
             _spriteBatch.Draw(_vie, _viePosition);
             _spriteBatch.End();
