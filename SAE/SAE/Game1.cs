@@ -46,7 +46,6 @@ namespace SAE
         private Texture2D _backgroundBonesTexture;
         private Vector2 _distance;
         private float rotation;
-        private int gunRotationPosition;
         private int [] VitesseFantomes;
         public int _score;
         public SpriteFont _textScore;
@@ -75,7 +74,7 @@ namespace SAE
             _gunPosition = new Vector2(GraphicsDevice.Viewport.Width / 2 + 15, GraphicsDevice.Viewport.Height - 97);
             _vitessePerso = 160;
             viePerso = 3;
-            _viePosition = new Vector2(0, 0);
+            _viePosition = new Vector2(70, 25);
             VitesseFantomes = new int[3];
             VitesseFantomes[0] = 100;
             VitesseFantomes[1] = 85;
@@ -156,10 +155,10 @@ namespace SAE
             }
             // TODO: Add your update logic here
 
-            string animationCoeurs;
+            string animationCoeurs = "1 vie";
             if(viePerso == 3)
             {
-                animationCoeurs = "3 vie";
+                animationCoeurs = "1 vie";
             }
             else if(viePerso == 2)
             {
@@ -167,7 +166,7 @@ namespace SAE
             }
             else
             {
-                animationCoeurs = "1 vie";
+                animationCoeurs = "3 vie";
             }
             KeyboardState keyboardState = Keyboard.GetState();
             string animation = "idle droite";
