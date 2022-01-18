@@ -44,7 +44,6 @@ namespace SAE
         private Texture2D _backgroundBonesTexture;
         private Vector2 _distance;
         private float rotation;
-        private int gunRotationPosition;
         private int [] VitesseFantomes;
         public int _score;
         public SpriteFont _textScore;
@@ -73,7 +72,7 @@ namespace SAE
             _gunPosition = new Vector2(GraphicsDevice.Viewport.Width / 2 + 15, GraphicsDevice.Viewport.Height - 97);
             _vitessePerso = 160;
             viePerso = 3;
-            _viePosition = new Vector2(0, 0);
+            _viePosition = new Vector2(70, 25);
             VitesseFantomes = new int[3];
             VitesseFantomes[0] = 100;
             VitesseFantomes[1] = 85;
@@ -96,14 +95,14 @@ namespace SAE
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // spritesheet
+            
             SpriteSheet spriteSheet = Content.Load<SpriteSheet>("animations.sf", new JsonContentLoader());
-           // SpriteSheet spriteSheetCoeurs = Content.Load<SpriteSheet>("coeurs.sf", new JsonContentLoader());
+            SpriteSheet spriteSheetCoeurs = Content.Load<SpriteSheet>("coeurs.sf", new JsonContentLoader());
             _backgroundTexture = Content.Load<Texture2D>("Battleground4");
             _backgroundBonesTexture = Content.Load<Texture2D>("bones");
             SpriteSheet spriteGun = Content.Load<SpriteSheet>("Gun.sf", new JsonContentLoader());
             _perso = new AnimatedSprite(spriteSheet);
-           // _vie = new AnimatedSprite(spriteSheetCoeurs);
+            _vie = new AnimatedSprite(spriteSheetCoeurs);
             _gun = new AnimatedSprite(spriteGun);
             _FantomePetit = new AnimatedSprite(spriteSheet, "fantôme petit");
 
@@ -149,6 +148,7 @@ namespace SAE
 
             _perso.Update(deltaSeconds);
             _gun.Update(deltaSeconds);
+            _vie.Update(deltaSeconds);
             _FantomePetit.Update(deltaSeconds);
             foreach (AnimatedSprite monster in monsters)
             {
@@ -156,7 +156,7 @@ namespace SAE
             }
             // TODO: Add your update logic here
 
-            string animationCoeurs;
+            string animationCoeurs = "3 vie";
             if(viePerso == 3)
             {
                 animationCoeurs = "3 vie";
@@ -194,7 +194,6 @@ namespace SAE
             if(keyboardState.IsKeyDown(Keys.Right))
             {
                 animation = "marche droite";
-                //gunRotationPosition = 15;
                 _persoPosition.X += walkSpeed;
                 _gunPosition.X += walkSpeed;
             }
@@ -279,7 +278,7 @@ namespace SAE
             
 
             UpdateBullets();
-           // _vie.Play(animationCoeurs);
+            _vie.Play(animationCoeurs);
             _perso.Play(animation);
             _gun.Play(animationGun);
             _perso.Update(deltaSeconds);
@@ -320,8 +319,8 @@ namespace SAE
             {
                 _score++;
             }*/
-
-            Rectangle hitboxFantomePetit = new Rectangle((int)monsterPositions[0].X, (int)monsterPositions[1].Y, HAUTEUR_PETIT, LARGEUR_PETIT);
+            
+            Rectangle hitboxFantomePetit = new Rectangle((int)monsterPositions[0].X, (int)monsterPositions[0].Y, HAUTEUR_PETIT, LARGEUR_PETIT);
             Rectangle hitboxFantomeBase = new Rectangle((int)monsterPositions[1].X, (int)monsterPositions[1].Y, HAUTEUR_BASE, LARGEUR_BASE);
             Rectangle hitboxFantomeGros = new Rectangle((int)monsterPositions[2].X, (int)monsterPositions[2].Y, HAUTEUR_GROS, LARGEUR_GROS);
 
@@ -365,7 +364,7 @@ namespace SAE
 
             }
             _spriteBatch.DrawString(_textScore, $"Score : {_score}", _positionScore, Color.Black);
-          //  _spriteBatch.Draw(_vie, _viePosition);
+            _spriteBatch.Draw(_vie, _viePosition);
             _spriteBatch.End();
             base.Draw(gameTime);
         }
