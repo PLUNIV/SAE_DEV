@@ -18,15 +18,16 @@ namespace SAE
 
         
         public Texture2D _bullet;
+        public Rectangle _bulletHitbox;
         public Vector2 _bulletPosition;
         public Vector2 Vélocité;
         public Vector2 origine;
+        public const int TAILLE_BULLET = 4;
 
         public bool isVisible;
 
         public Bullets(Texture2D _bulletTexture)
         {
-            //_bullet = Content.Load<Texture2D>("Battleground4");
             _bullet = _bulletTexture;
             isVisible = false;
         }

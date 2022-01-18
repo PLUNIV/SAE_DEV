@@ -17,8 +17,10 @@ using System.Collections.Generic;
 namespace SAE
 {
     public class Game1 : Game
-    {   
-
+    {
+        public const int LARGEUR_PERSO = 32;
+        public const int HAUTEUR_PERSO = 52;
+        private Rectangle _hitboxPerso;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         public Vector2 _persoPosition;
@@ -41,6 +43,8 @@ namespace SAE
         public SpriteFont _textScore;
         public Vector2 _positionScore;
 
+        private Rectangle _hitboxBullet;
+
         private AnimatedSprite[] monsters;
         private Vector2[] monsterPositions;
         private string[] monsterName;
@@ -58,6 +62,7 @@ namespace SAE
         {
             // TODO: Add your initialization logic here
             _persoPosition = new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height - 100);
+            _hitboxPerso = new Rectangle((int)_persoPosition.X, (int)_persoPosition.Y, LARGEUR_PERSO, HAUTEUR_PERSO);
             _gunPosition = new Vector2(GraphicsDevice.Viewport.Width / 2 + 15, GraphicsDevice.Viewport.Height - 97);
             _vitessePerso = 160;
             VitesseFantomes = new int[3];
@@ -166,6 +171,9 @@ namespace SAE
                 _persoPosition.X += walkSpeed;
                 _gunPosition.X += walkSpeed;
             }
+
+            _hitboxPerso.X = (int)_persoPosition.X;
+            System.Console.WriteLine(_hitboxPerso);
 
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
                 Shoot();

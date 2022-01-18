@@ -1,0 +1,24 @@
+{
+  "textureAtlas": {
+    "texture": "coeurs.png",
+    "regionWidth": 128,
+    "regionHeight": 128
+  },
+  "cycles": {
+    "1 vie": {
+      "frames": [0],
+      "isLooping": false,
+      "frameDuration": 0.2
+    },
+    "2 vie": {
+      "frames": [1],
+      "isLooping": false,
+      "frameDuration": 0.2
+    },
+    "3 vie": {
+      "frames": [2],
+      "isLooping": false,
+      "frameDuration": 0.2
+    }
+  }
+}
