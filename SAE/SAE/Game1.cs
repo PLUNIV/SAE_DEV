@@ -26,20 +26,18 @@ namespace SAE
         public Vector2 _persoPosition;
         private Vector2 _gunPosition;
         private int _vitessePerso;
-        private Vector2 _positionFantome;
         private AnimatedSprite _perso;
         private AnimatedSprite _FantomeGros;
         private AnimatedSprite _FantomeBase;
         private AnimatedSprite _FantomePetit;
-        private Rectangle _hitboxGros;
-        private Rectangle _hitboxBase;
-        private Rectangle _hitboxPetit;
         public const int LARGEUR_BASE = 72;
         public const int HAUTEUR_BASE = 60;
         public const int LARGEUR_GROS = 84;
         public const int HAUTEUR_GROS = 88;
         public const int LARGEUR_PETIT = 40;
         public const int HAUTEUR_PETIT = 44;
+        public const int HAUTEUR_BULLET = 4;
+        public const int LARGEUR_BULLET = 4;
         private AnimatedSprite _gun;
         private Song song;
         private Texture2D _backgroundTexture;
@@ -98,12 +96,12 @@ namespace SAE
 
             // spritesheet
             SpriteSheet spriteSheet = Content.Load<SpriteSheet>("animations.sf", new JsonContentLoader());
-            SpriteSheet spriteSheetCoeurs = Content.Load<SpriteSheet>("coeurs.sf", new JsonContentLoader());
+           // SpriteSheet spriteSheetCoeurs = Content.Load<SpriteSheet>("coeurs.sf", new JsonContentLoader());
             _backgroundTexture = Content.Load<Texture2D>("Battleground4");
             _backgroundBonesTexture = Content.Load<Texture2D>("bones");
             SpriteSheet spriteGun = Content.Load<SpriteSheet>("Gun.sf", new JsonContentLoader());
             _perso = new AnimatedSprite(spriteSheet);
-            _vie = new AnimatedSprite(spriteSheetCoeurs);
+           // _vie = new AnimatedSprite(spriteSheetCoeurs);
             _gun = new AnimatedSprite(spriteGun);
             _FantomePetit = new AnimatedSprite(spriteSheet, "fantôme petit");
 
@@ -279,7 +277,7 @@ namespace SAE
             
 
             UpdateBullets();
-            _vie.Play(animationCoeurs);
+           // _vie.Play(animationCoeurs);
             _perso.Play(animation);
             _gun.Play(animationGun);
             _perso.Update(deltaSeconds);
@@ -291,7 +289,7 @@ namespace SAE
                 monsters[i].Play(monsterName[i]);
                 monsters[i].Update(deltaSeconds);
             }
-            // Rectangle rectanglePerso = new Rectangle((int)_persoPosition.X, (int)_persoPosition.Y, );
+        
 
             base.Update(gameTime);
         }
@@ -303,6 +301,7 @@ namespace SAE
                 bullets._bulletPosition += bullets.Vélocité;
                 if (Vector2.Distance(bullets._bulletPosition, _persoPosition) > 800)
                     bullets.isVisible = false;
+                Rectangle hitboxBullets = new Rectangle((int)bullets._bulletPosition.X, (int)bullets._bulletPosition.Y,HAUTEUR_BULLET, LARGEUR_BULLET);
             }
 
             for(int i = 0; i < bullets.Count; i++)
@@ -319,7 +318,13 @@ namespace SAE
             {
                 _score++;
             }*/
+            Rectangle hitboxlePerso = new Rectangle((int)_persoPosition.X, (int)_persoPosition.Y, LARGEUR_PERSO, HAUTEUR_PERSO);
+            Rectangle hitboxFantomePetit = new Rectangle((int)monsterPositions[0].X, (int)monsterPositions[0].Y, HAUTEUR_PETIT, LARGEUR_PETIT);
+            Rectangle hitboxFantomeBase = new Rectangle((int)monsterPositions[1].X, (int)monsterPositions[1].Y, HAUTEUR_BASE, LARGEUR_BASE);
+            Rectangle hitboxFantomeGros = new Rectangle((int)monsterPositions[2].X, (int)monsterPositions[2].Y, HAUTEUR_GROS, LARGEUR_GROS);
+            
         }
+
 
         public void Shoot()
         {
@@ -349,7 +354,7 @@ namespace SAE
                 _spriteBatch.Draw(monsters[i], monsterPositions[i]);
             }
             _spriteBatch.DrawString(_textScore, $"Score : {_score}", _positionScore, Color.Black);
-            _spriteBatch.Draw(_vie, _viePosition);
+          //  _spriteBatch.Draw(_vie, _viePosition);
             _spriteBatch.End();
             base.Draw(gameTime);
         }
