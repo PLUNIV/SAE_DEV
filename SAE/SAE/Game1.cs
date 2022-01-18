@@ -39,6 +39,8 @@ namespace SAE
         public const int HAUTEUR_PETIT = 44;
         public const int HAUTEUR_BULLET = 4;
         public const int LARGEUR_BULLET = 4;
+        public const int NB_MONSTER = 3;
+
         private AnimatedSprite _gun;
         private Song song;
         private Texture2D _backgroundTexture;
@@ -54,11 +56,16 @@ namespace SAE
         public Vector2 _viePosition;
         private int _vieFantomeGros;
         private int _vieFantomeBase;
+        private Random fantomey = new Random();
+        private int level = 1;
+        private int levelLimit = 10; 
 
         private AnimatedSprite[] monsters;
         private Vector2[] monsterPositions;
         private string[] monsterName;
         private Rectangle[] hitboxMonster;
+        private int[] monsterLife;
+        private int[] monsterDefaultLife;
 
         List<Bullets> bullets = new List<Bullets>();
         public Game1()
@@ -79,16 +86,22 @@ namespace SAE
             _vieFantomeGros = 3;
             _vieFantomeBase = 2;
             _viePosition = new Vector2(70, 25);
-            VitesseFantomes = new int[3];
+            VitesseFantomes = new int[NB_MONSTER];
             VitesseFantomes[0] = 100;
             VitesseFantomes[1] = 85;
             VitesseFantomes[2] = 70;
 
-            monsterName = new string[3];
+            monsterName = new string[NB_MONSTER];
             monsterName[0] = "fantôme petit";
             monsterName[1] = "fantôme base";
             monsterName[2] = "fantôme gros";
 
+            monsterDefaultLife = new int[NB_MONSTER];
+            monsterDefaultLife[0] = 1;
+            monsterDefaultLife[1] = 2;
+            monsterDefaultLife[2] = 3;
+
+            monsterLife = (int[])monsterDefaultLife.Clone();
 
 
             _score = 0;
@@ -114,18 +127,18 @@ namespace SAE
 
             _textScore = Content.Load<SpriteFont>("Font");
 
-            monsters = new AnimatedSprite[3];
-            monsterPositions = new Vector2[3];
+            monsters = new AnimatedSprite[NB_MONSTER];
+            monsterPositions = new Vector2[NB_MONSTER];
             for (int i = 0; i < monsters.Length; i++)//pour tout les mobs
             {
-                System.Random fantomey = new Random();
+                
                 int positionFantomeY = fantomey.Next(0, GraphicsDevice.Viewport.Height);
 
                 monsters[i] = new AnimatedSprite(spriteSheet, monsterName[i]);
                 monsterPositions[i] = new Vector2(0 - monsters[i].TextureRegion.Width, positionFantomeY);
             }
 
-            hitboxMonster = new Rectangle[3];
+            hitboxMonster = new Rectangle[NB_MONSTER];
             hitboxMonster[0] = new Rectangle((int)monsterPositions[0].X, (int)monsterPositions[0].Y, HAUTEUR_PETIT, LARGEUR_PETIT);
             hitboxMonster[1] = new Rectangle((int)monsterPositions[1].X, (int)monsterPositions[1].Y, HAUTEUR_BASE, LARGEUR_BASE);
             hitboxMonster[2] = new Rectangle((int)monsterPositions[2].X, (int)monsterPositions[2].Y, HAUTEUR_GROS, LARGEUR_GROS);
@@ -167,8 +180,17 @@ namespace SAE
                 monster.Update(deltaSeconds);
             }
             // TODO: Add your update logic here
-
             string animationCoeurs = "3 vie";
+            if (viePerso <= 0)
+            {
+                //mort
+            }
+            else
+            {
+                animationCoeurs = viePerso.ToString() + " vie";
+            }
+
+            /*string animationCoeurs = "3 vie";
             if(viePerso == 3)
             {
                 animationCoeurs = "3 vie";
@@ -184,7 +206,7 @@ namespace SAE
             else
             {
                 //mort 
-            }
+            }*/
 
             KeyboardState keyboardState = Keyboard.GetState();
             string animation = "idle droite";
@@ -229,8 +251,6 @@ namespace SAE
                 //monsters[i] le mob
                 //monsterPositions[i] la position du mob                
 
-                System.Random apparition = new Random();
-                int spawn = apparition.Next(0, 3);
                 float diagonal;
                 if (monsterPositions[i].X == _persoPosition.X || monsterPositions[i].Y == _persoPosition.Y)
                 {
@@ -238,7 +258,7 @@ namespace SAE
                 }
                 else
                 {
-                    diagonal = (float)Math.Sqrt((VitesseFantomes[i] * VitesseFantomes[i]) / 2)/100;
+                    diagonal = (float)Math.Sqrt((VitesseFantomes[i] * VitesseFantomes[i]) / 2)/ VitesseFantomes[i];
                 }
 
                 if (monsterPositions[i].X > _persoPosition.X)
@@ -294,10 +314,8 @@ namespace SAE
                 }
                 if (hitboxMonster[i].Intersects(_hitboxPerso))
                 {
-                    System.Random fantomey = new Random();
-                    int positionFantomeY = fantomey.Next(0, GraphicsDevice.Viewport.Height);
                     viePerso--;
-                    monsterPositions[i] = new Vector2(0 - monsters[i].TextureRegion.Width, positionFantomeY);
+                    Respawn(i);
                 }
 
             }
@@ -330,44 +348,41 @@ namespace SAE
                 if (Vector2.Distance(bullets._bulletPosition, _persoPosition) > 800)
                     bullets.isVisible = false;
                 _hitboxBullets = new Rectangle((int)bullets._bulletPosition.X, (int)bullets._bulletPosition.Y,HAUTEUR_BULLET, LARGEUR_BULLET);
-                if(hitboxMonster[0].Intersects(_hitboxBullets))
+                
+                for (int i = 0; i < monsters.Length; i++)//pour tout les mobs
                 {
-                    _score++;
-                    System.Random fantomey = new Random();
-                    int positionFantomeY = fantomey.Next(0, GraphicsDevice.Viewport.Height);
-                    monsterPositions[0] = new Vector2(0 - monsters[0].TextureRegion.Width, positionFantomeY);
-
-                }
-
-                if (hitboxMonster[1].Intersects(_hitboxBullets))
-                {
-                    _vieFantomeBase--;
-                    if (_vieFantomeBase == 0) 
+                    if (hitboxMonster[i].Intersects(_hitboxBullets))
                     {
-                        _score += 2;
-                        System.Random fantomey = new Random();
-                        int positionFantomeY = fantomey.Next(0, GraphicsDevice.Viewport.Height);
-                        monsterPositions[1] = new Vector2(0 - monsters[1].TextureRegion.Width, positionFantomeY);
-                    }
-                    if (hitboxMonster[1].Intersects(_hitboxBullets))
-                    {
-                        _vieFantomeGros--;
-                        if (_vieFantomeGros == 0)
+                        bullets.isVisible = false;
+                        monsterLife[i]--;
+                        if (monsterLife[i] == 0)
                         {
-                            _score += 3;
-                            System.Random fantomey = new Random();
-                            int positionFantomeY = fantomey.Next(0, GraphicsDevice.Viewport.Height);
-                            monsterPositions[2] = new Vector2(0 - monsters[2].TextureRegion.Width, positionFantomeY);
+                            _score += monsterDefaultLife[i];
+
+                            Respawn(i);
+                            monsterLife[i] = monsterDefaultLife[i];
                         }
                     }
-
                 }
-
-
-
             }
 
-            for(int i = 0; i < bullets.Count; i++)
+            if(level >= levelLimit)
+            {
+              
+
+      
+            }
+            else if (_score/8  > level)
+            {
+                for (int i = 0; i < monsters.Length; i++)//pour tout les mobs
+                {
+                    VitesseFantomes[i] = (int)Math.Round(VitesseFantomes[i] * 1.1, 0);
+                }
+                _vitessePerso = (int)Math.Round(_vitessePerso * 1.1, 0);
+                level++;
+            }
+
+            for (int i = 0; i < bullets.Count; i++)
             {
                 if (!bullets[i].isVisible)
                 {
@@ -375,14 +390,6 @@ namespace SAE
                     i--;
                 }
             }
-           
-            //besoin hitbox fantôme
-            /*foreach(Bullets bullets in )
-            {
-                _score++;
-            }*/
-            
-            
         }
 
 
@@ -395,6 +402,20 @@ namespace SAE
 
             if (bullets.Count < 1)
                 bullets.Add(newBullet);
+        }
+        public void Respawn(int index)
+        {
+            int positionFantomeY = fantomey.Next(0, GraphicsDevice.Viewport.Height);
+            int cote = fantomey.Next(0,2);
+            if(cote == 0)
+            {
+                monsterPositions[index] = new Vector2(0 - monsters[index].TextureRegion.Width, positionFantomeY);
+            }
+            else
+            {
+                monsterPositions[index] = new Vector2(GraphicsDevice.Viewport.Width, positionFantomeY);
+            }
+
         }
 
         protected override void Draw(GameTime gameTime)
