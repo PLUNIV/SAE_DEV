@@ -20,17 +20,17 @@ namespace SAE
     {
         public const int LARGEUR_PERSO = 32;
         public const int HAUTEUR_PERSO = 52;
-        private Rectangle _hitboxPerso;
+        //private Rectangle _hitboxPerso;
         private Rectangle _hitboxBullets;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        public Vector2 _persoPosition;
+        //public Vector2 _persoPosition;
         private Vector2 _gunPosition;
-        private int _vitessePerso;
-        private AnimatedSprite _perso;
-        private AnimatedSprite _FantomeGros;
-        private AnimatedSprite _FantomeBase;
-        private AnimatedSprite _FantomePetit;
+        //private int _vitessePerso;
+        //private AnimatedSprite _perso;
+        //private AnimatedSprite _FantomeGros;
+        //private AnimatedSprite _FantomeBase;
+        //private AnimatedSprite _FantomePetit;
         public const int LARGEUR_BASE = 72;
         public const int HAUTEUR_BASE = 60;
         public const int LARGEUR_GROS = 84;
@@ -47,25 +47,29 @@ namespace SAE
         private Texture2D _backgroundBonesTexture;
         private Vector2 _distance;
         private float rotation;
-        private int [] VitesseFantomes;
+        
         public int _score;
         public SpriteFont _textScore;
         public Vector2 _positionScore;
         private AnimatedSprite _vie;
-        public int viePerso;
+        //public int viePerso;
         public Vector2 _viePosition;
-        private int _vieFantomeGros;
-        private int _vieFantomeBase;
+        //private int _vieFantomeGros;
+        //private int _vieFantomeBase;
         private Random fantomey = new Random();
         private int level = 1;
-        private int levelLimit = 10; 
+        private int levelLimit = 10;
 
-        private AnimatedSprite[] monsters;
+        private Monster[] _monsters;
+        private Squelette _perso;
+
+        /*private AnimatedSprite[] __monsters;
+        private int [] VitesseFantomes;
         private Vector2[] monsterPositions;
         private string[] monsterName;
         private Rectangle[] hitboxMonster;
         private int[] monsterLife;
-        private int[] monsterDefaultLife;
+        private int[] monsterDefaultLife;*/
 
         List<Bullets> bullets = new List<Bullets>();
         public Game1()
@@ -78,31 +82,17 @@ namespace SAE
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            _persoPosition = new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height - 100);
-            _hitboxPerso = new Rectangle((int)_persoPosition.X, (int)_persoPosition.Y, LARGEUR_PERSO, HAUTEUR_PERSO);
             _gunPosition = new Vector2(GraphicsDevice.Viewport.Width / 2 + 15, GraphicsDevice.Viewport.Height - 97);
-            _vitessePerso = 160;
-            viePerso = 3;
-            _vieFantomeGros = 3;
-            _vieFantomeBase = 2;
+
+            _perso = new Squelette(160, 3, HAUTEUR_PERSO, LARGEUR_PERSO, new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height - 100));
+
+            _monsters = new Monster[NB_MONSTER];
+            _monsters[0] = new Monster(100, 1, "fantôme petit", HAUTEUR_PETIT, LARGEUR_PETIT);
+            _monsters[1] = new Monster(85, 2, "fantôme base", HAUTEUR_BASE, LARGEUR_BASE);
+            _monsters[2] = new Monster(70, 3, "fantôme gros", HAUTEUR_GROS, LARGEUR_GROS);
+
+            
             _viePosition = new Vector2(70, 25);
-            VitesseFantomes = new int[NB_MONSTER];
-            VitesseFantomes[0] = 100;
-            VitesseFantomes[1] = 85;
-            VitesseFantomes[2] = 70;
-
-            monsterName = new string[NB_MONSTER];
-            monsterName[0] = "fantôme petit";
-            monsterName[1] = "fantôme base";
-            monsterName[2] = "fantôme gros";
-
-            monsterDefaultLife = new int[NB_MONSTER];
-            monsterDefaultLife[0] = 1;
-            monsterDefaultLife[1] = 2;
-            monsterDefaultLife[2] = 3;
-
-            monsterLife = (int[])monsterDefaultLife.Clone();
-
 
             _score = 0;
             _positionScore = new Vector2(600, 0);
@@ -120,29 +110,19 @@ namespace SAE
             _backgroundTexture = Content.Load<Texture2D>("Battleground4");
             _backgroundBonesTexture = Content.Load<Texture2D>("bones");
             SpriteSheet spriteGun = Content.Load<SpriteSheet>("Gun.sf", new JsonContentLoader());
-            _perso = new AnimatedSprite(spriteSheet);
+            _perso.Sprite = new AnimatedSprite(spriteSheet);
             _vie = new AnimatedSprite(spriteSheetCoeurs);
             _gun = new AnimatedSprite(spriteGun);
-            _FantomePetit = new AnimatedSprite(spriteSheet, "fantôme petit");
 
             _textScore = Content.Load<SpriteFont>("Font");
 
-            monsters = new AnimatedSprite[NB_MONSTER];
-            monsterPositions = new Vector2[NB_MONSTER];
-            for (int i = 0; i < monsters.Length; i++)//pour tout les mobs
+            for (int i = 0; i < _monsters.Length; i++)//pour tout les mobs
             {
-                
                 int positionFantomeY = fantomey.Next(0, GraphicsDevice.Viewport.Height);
 
-                monsters[i] = new AnimatedSprite(spriteSheet, monsterName[i]);
-                monsterPositions[i] = new Vector2(0 - monsters[i].TextureRegion.Width, positionFantomeY);
+                _monsters[i].LoadSprite(spriteSheet);
+                _monsters[i].Position = new Vector2(0 -_monsters[i].Hitbox.Width, positionFantomeY);
             }
-
-            hitboxMonster = new Rectangle[NB_MONSTER];
-            hitboxMonster[0] = new Rectangle((int)monsterPositions[0].X, (int)monsterPositions[0].Y, HAUTEUR_PETIT, LARGEUR_PETIT);
-            hitboxMonster[1] = new Rectangle((int)monsterPositions[1].X, (int)monsterPositions[1].Y, HAUTEUR_BASE, LARGEUR_BASE);
-            hitboxMonster[2] = new Rectangle((int)monsterPositions[2].X, (int)monsterPositions[2].Y, HAUTEUR_GROS, LARGEUR_GROS);
-
 
             this.song = Content.Load<Song>("hauntedcastle");
             MediaPlayer.Play(song);
@@ -162,7 +142,6 @@ namespace SAE
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             float deltaSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            float walkSpeed = deltaSeconds * _vitessePerso;
 
 
             IsMouseVisible = true;
@@ -171,168 +150,72 @@ namespace SAE
             _distance.Y = Mouse.GetState().Y - _gunPosition.Y;
             rotation = (float)Math.Atan2(_distance.Y, _distance.X);
 
-            _perso.Update(deltaSeconds);
+            _perso.Sprite.Update(deltaSeconds);
             _gun.Update(deltaSeconds);
             _vie.Update(deltaSeconds);
-            _FantomePetit.Update(deltaSeconds);
-            foreach (AnimatedSprite monster in monsters)
+            foreach (Monster _monster in _monsters)
             {
-                monster.Update(deltaSeconds);
+               _monster.Sprite.Update(deltaSeconds);
             }
             // TODO: Add your update logic here
             string animationCoeurs = "3 vie";
-            if (viePerso <= 0)
+            if (_perso.Life <= 0)
             {
                 //mort
             }
             else
             {
-                animationCoeurs = viePerso.ToString() + " vie";
+                animationCoeurs = _perso.Life.ToString() + " vie";
             }
 
-            /*string animationCoeurs = "3 vie";
-            if(viePerso == 3)
-            {
-                animationCoeurs = "3 vie";
-            }
-            else if(viePerso == 2)
-            {
-                animationCoeurs = "2 vie";
-            }
-            else if(viePerso == 1)
-            {
-                animationCoeurs = "1 vie";
-            }
-            else
-            {
-                //mort 
-            }*/
-
-            KeyboardState keyboardState = Keyboard.GetState();
             string animation = "idle droite";
             string animationGun = "gun droite";
-            if (keyboardState.IsKeyDown(Keys.Left))
-            {
-                /*animation = "marche gauche";
-                animationGun = "gun gauche";
-                gunRotationPosition = - 15;*/
-                animation = "marche droite";
-                _persoPosition.X -= walkSpeed;
-                _gunPosition.X -= walkSpeed;
-            }
-            if(keyboardState.IsKeyDown(Keys.Up))
-            {
-                _persoPosition.Y -= walkSpeed;
-                _gunPosition.Y -= walkSpeed;
-            }
-            if (keyboardState.IsKeyDown(Keys.Down))
-            {
-                _persoPosition.Y += walkSpeed;
-                _gunPosition.Y += walkSpeed;
-            }
-            if(keyboardState.IsKeyDown(Keys.Right))
-            {
-                animation = "marche droite";
-                _persoPosition.X += walkSpeed;
-                _gunPosition.X += walkSpeed;
-            }
-
-            _hitboxPerso.X = (int)_persoPosition.X;
-            _hitboxPerso.Y = (int)_persoPosition.Y;
-            System.Console.WriteLine(_hitboxPerso);
+            _gunPosition = _perso.Move(animation,_gunPosition,deltaSeconds);
 
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
                 Shoot();
 
 
-            
-            for (int i = 0; i < monsters.Length; i++)//pour tout les mobs
+
+            foreach (Monster _monster in _monsters)//pour tout les mobs
             {
-                //monsters[i] le mob
-                //monsterPositions[i] la position du mob                
-
-                float diagonal;
-                if (monsterPositions[i].X == _persoPosition.X || monsterPositions[i].Y == _persoPosition.Y)
-                {
-                    diagonal = 1;
-                }
-                else
-                {
-                    diagonal = (float)Math.Sqrt((VitesseFantomes[i] * VitesseFantomes[i]) / 2)/ VitesseFantomes[i];
-                }
-
-                if (monsterPositions[i].X > _persoPosition.X)
-                {
-                    monsterPositions[i].X -= (float)VitesseFantomes[i] * diagonal * deltaSeconds;
-                }
-                else if (monsterPositions[i].X < _persoPosition.X)
-                {
-                    monsterPositions[i].X += (float)VitesseFantomes[i] * diagonal * deltaSeconds;
-                }
-                else
-                {
-                    //sur la même ligne pas besoin de bouger
-                }
-                hitboxMonster[i].X = (int)monsterPositions[i].X;
-
-                if (monsterPositions[i].Y > _persoPosition.Y)
-                {
-                    monsterPositions[i].Y -= (float)VitesseFantomes[i] * diagonal * deltaSeconds;
-                }
-                else if (monsterPositions[i].Y < _persoPosition.Y)
-                {
-                    monsterPositions[i].Y += (float)VitesseFantomes[i] * diagonal * deltaSeconds;
-                }
-                else
-                {
-                    //sur la même colonne pas besoin de bouger
-                }
-                hitboxMonster[i].Y = (int)monsterPositions[i].Y;
-
-                if (_persoPosition.Y < 220)
-                {
-                    _persoPosition.Y = 220;
-                    _gunPosition.Y = _persoPosition.Y + 3;
-                }
-
-                if (_persoPosition.X < 14)
-                {
-                    _persoPosition.X = 14;
-                    _gunPosition.X = _persoPosition.X + 15;
-                }
-
-                if (_persoPosition.Y > GraphicsDevice.Viewport.Height - 14)
-                {
-                    _persoPosition.Y = GraphicsDevice.Viewport.Height - 14;
-                    _gunPosition.Y = _persoPosition.Y + 3;
-                }
-
-                if (_persoPosition.X > GraphicsDevice.Viewport.Width - 14)
-                {
-                    _persoPosition.X = GraphicsDevice.Viewport.Width - 14;
-                    _gunPosition.X = _persoPosition.X + 15;
-                }
-                if (hitboxMonster[i].Intersects(_hitboxPerso))
-                {
-                    viePerso--;
-                    Respawn(i);
-                }
-
+                _monster.Move(_perso, deltaSeconds,GraphicsDevice);
             }
-            
+
+            if (_perso.Position.Y < 220)
+            {
+                _perso.Position = new Vector2(_perso.Position.X,220);
+                _gunPosition.Y = _perso.Position.Y + 3;
+            }
+
+            if (_perso.Position.X < 14)
+            {
+                _perso.Position = new Vector2(14,_perso.Position.Y);
+                _gunPosition.X = _perso.Position.X + 15;
+            }
+
+            if (_perso.Position.Y > GraphicsDevice.Viewport.Height - 14)
+            {
+                _perso.Position = new Vector2(_perso.Position.X,GraphicsDevice.Viewport.Height - 14);
+                _gunPosition.Y = _perso.Position.Y + 3;
+            }
+
+            if (_perso.Position.X > GraphicsDevice.Viewport.Width - 14)
+            {
+                _perso.Position = new Vector2(GraphicsDevice.Viewport.Width - 14, _perso.Position.Y);
+                _gunPosition.X = _perso.Position.X + 15;
+            }
 
             UpdateBullets();
             _vie.Play(animationCoeurs);
-            _perso.Play(animation);
+            _perso.Sprite.Play(animation);
             _gun.Play(animationGun);
-            _perso.Update(deltaSeconds);
-            _FantomePetit.Play("fantôme petit");
-            _FantomePetit.Update(deltaSeconds);
+            _perso.Sprite.Update(deltaSeconds);
 
-            for (int i = 0; i < monsters.Length; i++)//pour tout les mobs
+            for (int i = 0; i < _monsters.Length; i++)//pour tout les mobs
             {
-                monsters[i].Play(monsterName[i]);
-                monsters[i].Update(deltaSeconds);
+                _monsters[i].Sprite.Play(_monsters[i].Name);
+                _monsters[i].Sprite.Update(deltaSeconds);
                
             }
            
@@ -345,22 +228,22 @@ namespace SAE
             foreach(Bullets bullets in bullets)
             {
                 bullets._bulletPosition += bullets.Vélocité;
-                if (Vector2.Distance(bullets._bulletPosition, _persoPosition) > 800)
+                if (Vector2.Distance(bullets._bulletPosition, _perso.Position) > 800)
                     bullets.isVisible = false;
                 _hitboxBullets = new Rectangle((int)bullets._bulletPosition.X, (int)bullets._bulletPosition.Y,HAUTEUR_BULLET, LARGEUR_BULLET);
                 
-                for (int i = 0; i < monsters.Length; i++)//pour tout les mobs
+                for (int i = 0; i < _monsters.Length; i++)//pour tout les mobs
                 {
-                    if (hitboxMonster[i].Intersects(_hitboxBullets))
+                    if (_monsters[i].Hitbox.Intersects(_hitboxBullets))
                     {
                         bullets.isVisible = false;
-                        monsterLife[i]--;
-                        if (monsterLife[i] == 0)
+                        _monsters[i].Life--;
+                        if (_monsters[i].Life == 0)
                         {
-                            _score += monsterDefaultLife[i];
+                            _score += _monsters[i].DefaultLife;
 
-                            Respawn(i);
-                            monsterLife[i] = monsterDefaultLife[i];
+                            _monsters[i].Respawn(GraphicsDevice);
+                            _monsters[i].Life = _monsters[i].DefaultLife;
                         }
                     }
                 }
@@ -368,17 +251,15 @@ namespace SAE
 
             if(level >= levelLimit)
             {
-              
-
-      
+              //fait rien
             }
             else if (_score/8  > level)
             {
-                for (int i = 0; i < monsters.Length; i++)//pour tout les mobs
+                for (int i = 0; i < _monsters.Length; i++)//pour tout les mobs
                 {
-                    VitesseFantomes[i] = (int)Math.Round(VitesseFantomes[i] * 1.1, 0);
+                    _monsters[i].Vitesse = (int)Math.Round(_monsters[i].Vitesse * 1.1, 0);
                 }
-                _vitessePerso = (int)Math.Round(_vitessePerso * 1.1, 0);
+                _perso.Vitesse = (int)Math.Round(_perso.Vitesse * 1.1, 0);
                 level++;
             }
 
@@ -403,20 +284,6 @@ namespace SAE
             if (bullets.Count < 1)
                 bullets.Add(newBullet);
         }
-        public void Respawn(int index)
-        {
-            int positionFantomeY = fantomey.Next(0, GraphicsDevice.Viewport.Height);
-            int cote = fantomey.Next(0,2);
-            if(cote == 0)
-            {
-                monsterPositions[index] = new Vector2(0 - monsters[index].TextureRegion.Width, positionFantomeY);
-            }
-            else
-            {
-                monsterPositions[index] = new Vector2(GraphicsDevice.Viewport.Width, positionFantomeY);
-            }
-
-        }
 
         protected override void Draw(GameTime gameTime)
         {
@@ -425,14 +292,14 @@ namespace SAE
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
             _spriteBatch.Draw(_backgroundTexture, new Vector2(0, 0), Color.White);
-            _spriteBatch.Draw(_perso, _persoPosition);
+            _spriteBatch.Draw(_perso.Sprite, _perso.Position);
             _spriteBatch.Draw(_gun, _gunPosition, rotation);
             foreach (Bullets bullet in bullets)
                 bullet.Draw(_spriteBatch);
             _spriteBatch.Draw(_backgroundBonesTexture, new Vector2(0, 0), Color.White);
-            for (int i = 0; i < monsters.Length; i++)
+            for (int i = 0; i < _monsters.Length; i++)
             {
-                _spriteBatch.Draw(monsters[i], monsterPositions[i]);
+                _spriteBatch.Draw(_monsters[i].Sprite, _monsters[i].Position);
                 
             }
             
